@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+    container_name: postgres
+  signal:
+    build: ./signal
+    ports:
+      - "8001:8001"
+      - "9432:5432"
+    volumes:
+        - ./signal:/app
+    depends_on: [postgres]
+    container_name: signalsapi
+  panel:
+    build: ./panel
+    ports:
+      - "8000:8000"
+    volumes:
+        - ./panel:/app
+    depends_on: [postgres]
+    container_name: panelapi
