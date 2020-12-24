@@ -1,6 +1,7 @@
 FROM node:10.22.0
 
 ENV NODE_ENV=dev
+ENV DOCKER_BUILDKIT=1
 
 WORKDIR /app
 

@@ -1,26 +1,48 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
+    container_name: postgres
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-    container_name: postgres
+      POSTGRES_USER: postgres #redundant because of the env file
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    env_file:
+      - .env
   signal:
+    container_name: signalsapi
+    image: signal
     build: ./signal
     ports:
       - "8001:8001"
       - "9432:5432"
     volumes:
-        - ./signal:/app
+      - ./signal:/app/signal
+    networks:
+      - backend
+    restart: unless-stopped
     depends_on: [postgres]
-    container_name: signalsapi
+    env_file:
+      - .env
   panel:
+    container_name: panelapi
+    image: panel
     build: ./panel
     ports:
       - "8000:8000"
     volumes:
-        - ./panel:/app
+      - ./panel:/app/panel
+    networks:
+      - frontend
+      - backend
     depends_on: [postgres]
-    container_name: panelapi
+    restart: on-failure
+networks:
+  frontend:
+  backend:
+volumes:
+  db-data:
